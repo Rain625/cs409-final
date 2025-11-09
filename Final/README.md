@@ -95,6 +95,34 @@ Other:
 You may be wondering how the command `npx create-react-app my-app --template typescript` works and why there is no installation step. Click [here](https://www.bram.us/2017/07/15/introducing-npx-an-npm-package-runner/) for an explanation of `npx`.
 
 
+---
+
+## 🚀 New Features (2025 Update)
+
+This project has been enhanced with the following features:
+
+### 🔐 User Authentication
+- User registration and login with JWT tokens
+- Secure password hashing (bcryptjs)
+- Protected routes for authenticated users
+
+### ❤️ Favorite Recipes
+- Users can save recipes to their favorites
+- View and manage favorite recipes
+- Real-time favorite status indication
+
+### 📝 User Created Recipes
+- Create, edit, and delete custom recipes
+- Add ingredients, instructions, and images
+- View personal recipe collection
+
+### 🌐 Cloud Integration
+- All 13,582+ recipe images stored in MongoDB GridFS
+- Backend API: https://recipebackend-production-5f88.up.railway.app
+- Seamless cloud-based image delivery
+
+---
+
 ## Submission Details
 
 Here's what you will need to submit:

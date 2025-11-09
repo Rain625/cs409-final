@@ -36,12 +36,13 @@ export default function Pagination({ page, total, limit, onPageChange }: Paginat
         className="pagination-btn"
         disabled={page === 0}
         onClick={() => onPageChange(page - 1)}
+        title="Previous Page"
       >
-        ← Previous
+        ← Prev
       </button>
 
       <span className="pagination-info">
-        Go to:{" "}
+        Page:{" "}
         <input
           type="text"
           value={inputValue}
@@ -56,14 +57,10 @@ export default function Pagination({ page, total, limit, onPageChange }: Paginat
         className="pagination-btn"
         disabled={page === totalPages - 1}
         onClick={() => onPageChange(page + 1)}
+        title="Next Page"
       >
         Next →
       </button>
     </div>
   );
 }
-
-
-// Pokemon type image source: https://www.deviantart.com/jormxdos/gallery#content
-// Pokemon placeholder image for image-missing pokemons:https://pokemon-fano.fandom.com/wiki/Poke_Ball
-// Pokemon logo image:https://freebiesupply.com/logos/pokemon-logo/
