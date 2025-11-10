@@ -1,96 +1,128 @@
-# 🍳 最终项目前端框架说明（Final Project Skeleton）
+# 食谱管理系统 - 前端应用
 
-本仓库作为我们最终课程项目（Final Project）的前端基础框架。当前版本以我在 MP2 宝可梦搜索引擎项目为蓝本修改而来，用于提供前端结构、组件模板、数据展示逻辑等基础代码。后续我们将基于此项目扩展出完整的后端 API（Node.js + Express）和 MongoDB 数据库支持。
-
-本项目的目标是构建一个数据库驱动的全栈 Web 应用，包括前端、后端和数据库三部分。前端使用 React + TypeScript 构建；后端使用 Node.js + Express 实现 RESTful API；数据库使用 MongoDB Atlas 存储菜谱数据。系统最终还将实现用户注册、登录与权限验证等功能。当前仓库仅包含前端部分，便于组员先行进行页面结构设计、UI/UX 开发与数据展示。
+基于 React + TypeScript 开发的现代化食谱管理 Web 应用
 
 ---
 
-## 🚀 启动方式
+## 📋 项目简介
 
-1. 克隆仓库  
-   `git clone <本仓库地址>`
+这是一个功能完整的食谱管理系统前端应用，提供食谱浏览、搜索、收藏和创建等功能。用户可以浏览 13,000+ 道菜谱，管理个人收藏，并创建自己的食谱。
 
-2. 进入项目文件夹  
-   `cd Final`
-
-3. 安装依赖  
-   `npm install`
-
-4. 启动前端项目  
-   `npm start`
-
-运行后访问 [http://localhost:3000](http://localhost:3000) 即可查看页面。  
-目前数据来自本地 `recipes_cleaned.json` 文件，后续会替换为数据库中的动态数据。
+**后端 API**：https://recipebackend-production-5f88.up.railway.app
 
 ---
 
-## 📁 文件与目录结构
+## ✨ 核心功能
+
+### 📖 食谱浏览
+- **列表视图（List View）**：支持搜索、排序和过滤
+- **图库视图（Gallery View）**：按食材多选过滤（AND 逻辑）
+- **详情视图（Detail View）**：查看完整食谱信息，支持上一个/下一个导航
+
+### 🔐 用户系统
+- 用户注册和登录（JWT 认证）
+- 密码加密存储（bcrypt）
+- 受保护的路由
+
+### ❤️ 个人收藏
+- 收藏喜欢的食谱
+- 查看和管理收藏列表
+- 实时收藏状态显示
+
+### 📝 创建食谱
+- 创建、编辑和删除自定义食谱
+- 添加食材、烹饪步骤和图片
+- 查看个人食谱集
+
+### 🌐 云端集成
+- 13,582+ 张食谱图片存储在 MongoDB GridFS
+- 所有数据通过 RESTful API 获取
+- HTTPS 安全连接
+
+---
+
+
+---
+
+## 📁 项目结构
 
 ```
-Final/
-├── public/                  # 静态资源目录
-│   ├── Food Images/         # 食物图片素材
-│   └── index.html
-├── src/                     # 前端主要代码（React + TypeScript）
-│   ├── components/          # 可复用组件
-│   ├── pages/               # 页面文件
-│   └── index.tsx            # 前端入口
-├── recipes_cleaned.json     # 清理后的菜谱数据文件
-├── package.json             # npm 配置文件
-└── README.md                # 项目说明文档
+src/
+├── App.tsx                    # 主应用组件和路由配置
+├── contexts/
+│   └── AuthContext.tsx        # 用户认证上下文
+├── RecipeDataContext.tsx     # 食谱数据管理
+├── pages/
+│   ├── LoginPage.tsx          # 登录页面
+│   ├── RegisterPage.tsx       # 注册页面
+│   ├── FavoritesPage.tsx      # 收藏页面
+│   ├── MyRecipesPage.tsx      # 我的食谱页面
+│   └── CreateRecipePage.tsx   # 创建/编辑食谱页面
+├── ListView.tsx               # 列表视图组件
+├── GalleryView.tsx            # 图库视图组件
+├── DetailView.tsx             # 详情视图组件
+├── pageselector.tsx           # 分页组件
+├── config/
+│   └── imageConfig.ts         # 图片配置（云端 URL）
+└── styles/
+    ├── auth.css               # 认证页面样式
+    └── recipe-form.css        # 表单样式
 ```
 
 ---
 
-## 🥗 数据说明
+## 🚀 快速开始
 
-本项目的数据文件为 `recipes_cleaned.json`，这是清理后的菜谱数据，结构规范、字段统一。主要字段包括：  
-- **Title**：菜谱标题  
-- **Ingredients**：原始配料（字符串数组）  
-- **Instructions**：制作步骤  
-- **Extracted_Ingredients**：提取的标准化食材名称  
-- **Image_Name**：对应图片文件名  
+### 安装依赖
+```bash
+npm install
+```
 
-当后端与数据库搭建完成后，此文件将被导入 MongoDB Atlas 数据库中，并通过 API 提供给前端调用。  
+### 启动开发服务器
+```bash
+npm start
+```
 
-所有食物图片放置于 `/public/Food Images/` 文件夹中。这些图片将在前端的图库（Gallery）或详情页中展示，命名与 `recipes_cleaned.json` 中的 `Image_Name` 一一对应。请务必保持命名一致，否则页面加载会出错。
+访问 `http://localhost:3000/mp2`
 
----
-
-## 💻 前端运行与开发说明
-
-前端基于 Create React App + TypeScript 构建，支持组件化开发与响应式布局。运行步骤如下：  
-
-`npm install`  
-`npm start`  
-
-运行后将在本地开启开发服务器。所有静态图片文件需放在 `/public/Food Images/` 路径下，前端代码（组件、页面、样式）位于 `/src`。若出现端口冲突，可在项目根目录创建 `.env` 文件并指定端口号：  
-
-`PORT=3001`  
+### 构建生产版本
+```bash
+npm run build
+```
 
 ---
 
-## ⚙️ 后端与数据库开发计划
+## 🎨 界面特性
 
-后端将使用 Node.js + Express 实现，并连接 MongoDB Atlas。后端功能包括：  
-- 用户注册与登录（JWT 认证）  
-- 菜谱数据的增删改查（CRUD）  
-- 用户收藏或自定义菜谱功能  
-- API 路由设计与数据过滤  
-- 安全处理（输入验证、CORS、密码加密）  
+- 🎯 **响应式设计**：适配桌面和移动设备
+- 🌈 **现代 UI**：渐变色、卡片式布局、流畅动画
+- ⚡ **性能优化**：懒加载、图片错误处理、缓存策略
+- 🔍 **实时搜索**：输入即时过滤结果
+- 📄 **智能分页**：每页 48 项，支持页码跳转
 
-API 路由初步设计如下：  
-| 模块 | 功能 |  
-|------|------|  
-| `/api/recipes` | 查询 / 新增 / 修改 / 删除菜谱 |  
-| `/api/auth` | 用户注册 / 登录 / JWT 鉴权 |  
-| `/api/users` | 用户资料管理 |  
-| `/api/favorites` | 用户收藏菜谱 |  
+---
+
+## 🔗 API 集成
+
+### 后端 API 端点
+
+- **食谱**：`/api/recipes` - 获取食谱列表
+- **认证**：`/api/auth/register`、`/api/auth/login`
+- **收藏**：`/api/favorites` - 管理用户收藏
+- **用户食谱**：`/api/user-recipes` - CRUD 操作
+- **图片**：`/api/gridfs-images/:filename` - 获取图片
+
+所有请求使用 HTTPS 加密传输。
+
+---
+
+## 📦 数据存储
+
+- **用户数据**：MongoDB Atlas 云数据库
+- **食谱图片**：MongoDB GridFS（13,582+ 张）
+- **身份认证**：JWT Token（localStorage）
+- **密码加密**：bcrypt（10 轮加盐）
 
 ---
 
 
-
-**项目维护者：** Pete Chen (`peteoyhh`)  
-**最后更新日期：** 2025 年 11 月
