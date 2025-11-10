@@ -1,7 +1,11 @@
+/**
+ * 菜谱数据管理 Context
+ * 提供全局菜谱数据获取、缓存、搜索和分页功能
+ */
 import React, { createContext, useContext, useState } from "react";
 import axios from "axios";
 
-// 后端 API 地址 - 注意：路由在 /api 前缀下
+// 后端 API 地址
 const API_BASE_URL = "https://recipebackend-production-5f88.up.railway.app/api";
 
 // 菜谱接口定义
@@ -30,20 +34,17 @@ export function RecipeDataProvider({ children }: { children: React.ReactNode }) 
   const [allRecipes, setAllRecipes] = useState<Recipe[]>([]);
   const [recipeCache, setRecipeCache] = useState<Record<string, Recipe>>({});
 
-  // 获取所有菜谱
+  // 获取所有菜谱（仅执行一次）
   const fetchAllRecipes = async () => {
     if (allRecipes.length > 0) return;
     
     try {
-      console.log("正在从后端获取菜谱数据...");
-      // 设置limit=50000以获取所有数据（后端默认只返回100条）
+      // 设置 limit=50000 以获取所有数据（后端默认只返回 100 条）
       const res = await axios.get(`${API_BASE_URL}/recipes?limit=50000`);
-      console.log("API响应:", res.data);
-      
       const recipes: Recipe[] = res.data.data;
       setAllRecipes(recipes);
       
-      // 缓存所有菜谱
+      // 构建菜谱缓存（用于快速查找）
       const cache: Record<string, Recipe> = {};
       recipes.forEach((recipe) => {
         cache[recipe._id] = recipe;
@@ -53,17 +54,10 @@ export function RecipeDataProvider({ children }: { children: React.ReactNode }) 
       console.log(`✅ 成功加载 ${recipes.length} 个菜谱`);
     } catch (error) {
       console.error("❌ 获取菜谱列表失败:", error);
-      if (axios.isAxiosError(error)) {
-        console.error("错误详情:", {
-          message: error.message,
-          status: error.response?.status,
-          data: error.response?.data
-        });
-      }
     }
   };
 
-  // 根据 _id 获取单个菜谱详情
+  // 根据 ID 获取单个菜谱（带缓存）
   const fetchRecipeById = async (id: string): Promise<Recipe> => {
     if (recipeCache[id]) return recipeCache[id];
     
@@ -78,14 +72,13 @@ export function RecipeDataProvider({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // 分页功能
+  // 分页功能 - 从菜谱列表中提取指定页的数据
   const fetchPage = (recipes: Recipe[], page: number, limit = 20): Recipe[] => {
     const start = page * limit;
-    const end = start + limit;
-    return recipes.slice(start, end);
+    return recipes.slice(start, start + limit);
   };
 
-  // 搜索菜谱
+  // 搜索菜谱 - 根据标题或食材搜索
   const searchRecipes = (query: string, searchMode: "title" | "ingredient"): Recipe[] => {
     if (!query) return allRecipes;
     
@@ -94,24 +87,21 @@ export function RecipeDataProvider({ children }: { children: React.ReactNode }) 
     return allRecipes.filter((recipe) => {
       try {
         if (searchMode === "title") {
-          // 安全检查 title 是否存在
-          return recipe.title && recipe.title.toLowerCase().includes(lowerQuery);
+          return recipe.title?.toLowerCase().includes(lowerQuery);
         } else {
-          // 搜索配料 - 安全检查每个配料是否存在
-          const ingredientsMatch = recipe.ingredients && Array.isArray(recipe.ingredients)
-            ? recipe.ingredients.some((ing) => ing && typeof ing === 'string' && ing.toLowerCase().includes(lowerQuery))
-            : false;
+          // 搜索食材（同时搜索完整食材列表和提取的关键食材）
+          const ingredientsMatch = recipe.ingredients?.some(
+            (ing) => ing && typeof ing === 'string' && ing.toLowerCase().includes(lowerQuery)
+          );
           
-          const extractedMatch = recipe.extractedIngredients && Array.isArray(recipe.extractedIngredients)
-            ? recipe.extractedIngredients.some((ing) => ing && typeof ing === 'string' && ing.toLowerCase().includes(lowerQuery))
-            : false;
+          const extractedMatch = recipe.extractedIngredients?.some(
+            (ing) => ing && typeof ing === 'string' && ing.toLowerCase().includes(lowerQuery)
+          );
           
           return ingredientsMatch || extractedMatch;
         }
       } catch (error) {
-        // 如果出现任何错误，跳过这个菜谱
-        console.warn(`搜索菜谱 ${recipe._id} 时出错:`, error);
-        return false;
+        return false; // 出错时跳过该菜谱
       }
     });
   };

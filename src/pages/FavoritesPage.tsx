@@ -1,3 +1,7 @@
+/**
+ * 我的收藏页面
+ * 显示用户收藏的所有菜谱
+ */
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";

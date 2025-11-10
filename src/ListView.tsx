@@ -1,3 +1,7 @@
+/**
+ * 列表视图组件
+ * 显示菜谱列表，支持搜索、排序和分页
+ */
 import { useRecipeData, Recipe } from "./RecipeDataContext";
 import { useEffect, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
@@ -5,8 +9,9 @@ import Pagination from "./pageselector";
 import { getImageUrl, PLACEHOLDER_IMAGE } from "./config/imageConfig";
 import "./index.css";
 
-const limit = 48;
+const limit = 48; // 每页显示数量
 
+// 骨架屏加载占位组件
 function SkeletonCard() {
   return <div className="skeleton-card" />;
 }
@@ -14,7 +19,9 @@ function SkeletonCard() {
 export default function ListView() {
   const { fetchAllRecipes, allRecipes, searchRecipes } = useRecipeData();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [loading, setLoading] = useState(true);
 
+  // 从 URL 参数初始化状态
   const [page, setPage] = useState(Number(searchParams.get("page")) || 0);
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [searchMode, setSearchMode] = useState<"title" | "ingredient">(
@@ -27,12 +34,12 @@ export default function ListView() {
     (searchParams.get("order") as "asc" | "desc") || "asc"
   );
 
-  const [loading, setLoading] = useState(true);
-
+  // 初始化：获取所有菜谱数据
   useEffect(() => {
     fetchAllRecipes().finally(() => setLoading(false));
   }, []);
 
+  // 同步状态到 URL 参数（便于分享和书签）
   useEffect(() => {
     const params: Record<string, string> = {};
     if (search) params.search = search;
@@ -43,16 +50,16 @@ export default function ListView() {
     setSearchParams(params);
   }, [search, page, searchMode, sortMode, sortOrder]);
 
+  // 搜索过滤
   const filtered = search ? searchRecipes(search, searchMode) : allRecipes;
 
+  // 排序
   const sorted = [...filtered].sort((a, b) => {
-    let result = 0;
-    if (sortMode === "id") result = a.id - b.id;
-    if (sortMode === "title") result = a.title.localeCompare(b.title);
-
+    const result = sortMode === "id" ? a.id - b.id : a.title.localeCompare(b.title);
     return sortOrder === "asc" ? result : -result;
   });
 
+  // 分页
   const paginated = sorted.slice(page * limit, (page + 1) * limit);
 
   return (

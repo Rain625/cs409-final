@@ -48,25 +48,33 @@
 
 ```
 src/
-├── App.tsx                    # 主应用组件和路由配置
-├── contexts/
-│   └── AuthContext.tsx        # 用户认证上下文
-├── RecipeDataContext.tsx     # 食谱数据管理
-├── pages/
-│   ├── LoginPage.tsx          # 登录页面
-│   ├── RegisterPage.tsx       # 注册页面
-│   ├── FavoritesPage.tsx      # 收藏页面
-│   ├── MyRecipesPage.tsx      # 我的食谱页面
-│   └── CreateRecipePage.tsx   # 创建/编辑食谱页面
-├── ListView.tsx               # 列表视图组件
-├── GalleryView.tsx            # 图库视图组件
-├── DetailView.tsx             # 详情视图组件
-├── pageselector.tsx           # 分页组件
-├── config/
-│   └── imageConfig.ts         # 图片配置（云端 URL）
-└── styles/
-    ├── auth.css               # 认证页面样式
-    └── recipe-form.css        # 表单样式
+├── index.tsx                  # 应用入口文件，处理 React 根组件渲染和 GitHub Pages 路由
+├── App.tsx                    # 主应用组件，包含路由配置、导航栏和全局状态管理
+├── index.css                  # 全局样式文件，包含所有组件的 CSS 样式
+│
+├── contexts/                  # 全局状态管理
+│   └── AuthContext.tsx        # 用户认证管理，提供登录、注册、登出功能和认证状态
+│
+├── RecipeDataContext.tsx      # 食谱数据管理，提供数据获取、缓存、搜索和分页功能
+│
+├── pages/                     # 页面组件
+│   ├── LoginPage.tsx          # 登录页面，用户通过邮箱和密码登录
+│   ├── RegisterPage.tsx       # 注册页面，新用户创建账号
+│   ├── FavoritesPage.tsx      # 收藏页面，显示用户收藏的所有菜谱
+│   ├── MyRecipesPage.tsx      # 我的菜谱页面，显示用户创建的菜谱，支持编辑和删除
+│   └── CreateRecipePage.tsx   # 创建/编辑菜谱页面，用户创建新菜谱或编辑已有菜谱
+│
+├── ListView.tsx               # 列表视图组件，显示菜谱列表，支持搜索、排序和分页
+├── GalleryView.tsx            # 图库视图组件，支持按食材多选过滤（AND 逻辑）和分页显示
+├── DetailView.tsx             # 详情视图组件，显示完整菜谱信息、支持收藏和前后导航
+├── pageselector.tsx           # 分页组件，提供上一页、下一页和跳转到指定页功能
+│
+├── config/                    # 配置文件
+│   └── imageConfig.ts         # 图片配置管理，配置图片存储源（MongoDB GridFS）和 URL 生成规则
+│
+└── styles/                    # 样式文件
+    ├── auth.css               # 认证页面样式（登录、注册页面）
+    └── recipe-form.css        # 食谱表单样式（创建、编辑页面）
 ```
 
 ---

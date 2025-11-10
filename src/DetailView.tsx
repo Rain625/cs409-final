@@ -1,3 +1,8 @@
+/**
+ * 菜谱详情视图组件
+ * 显示完整的菜谱信息，包括食材、做法、图片
+ * 支持收藏功能和前后导航
+ */
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useRecipeData, Recipe } from "./RecipeDataContext";
@@ -12,7 +17,7 @@ export default function DetailView() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { fetchRecipeById, allRecipes } = useRecipeData();
-  const { isAuthenticated, token, updateUserFavorites } = useAuth();
+  const { isAuthenticated, token } = useAuth();
 
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
@@ -21,6 +26,7 @@ export default function DetailView() {
   const [isFavorited, setIsFavorited] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
 
+  // 获取菜谱详情
   useEffect(() => {
     if (id) {
       setLoading(true);
@@ -28,8 +34,6 @@ export default function DetailView() {
         .then((res) => {
           setRecipe(res);
           setLoading(false);
-          
-          // 检查是否已收藏
           if (isAuthenticated && token) {
             checkFavoriteStatus(id);
           }
@@ -39,8 +43,9 @@ export default function DetailView() {
           setLoading(false);
         });
     }
-  }, [id, fetchRecipeById, isAuthenticated, token]);
+  }, [id, isAuthenticated, token]);
 
+  // 检查收藏状态
   const checkFavoriteStatus = async (recipeId: string) => {
     if (!isAuthenticated || !token) return;
 
@@ -52,30 +57,28 @@ export default function DetailView() {
         setIsFavorited(res.data.data.isFavorited);
       }
     } catch (err) {
-      console.error("Error checking favorite status:", err);
+      console.error("检查收藏状态出错:", err);
     }
   };
 
+  // 切换收藏状态
   const handleToggleFavorite = async () => {
     if (!isAuthenticated) {
-      alert("Please login to save favorites");
+      alert("请先登录以保存收藏");
       navigate("/login");
       return;
     }
 
     if (!id) return;
-
     setFavLoading(true);
 
     try {
       if (isFavorited) {
-        // Remove from favorites
         await axios.delete(`${API_BASE_URL}/favorites/${id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setIsFavorited(false);
       } else {
-        // Add to favorites
         await axios.post(
           `${API_BASE_URL}/favorites/${id}`,
           {},
@@ -84,8 +87,8 @@ export default function DetailView() {
         setIsFavorited(true);
       }
     } catch (err: any) {
-      console.error("Error toggling favorite:", err);
-      alert(err.response?.data?.message || "Failed to update favorite");
+      console.error("切换收藏状态失败:", err);
+      alert(err.response?.data?.message || "操作失败");
     } finally {
       setFavLoading(false);
     }

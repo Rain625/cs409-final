@@ -1,3 +1,7 @@
+/**
+ * 创建/编辑菜谱页面
+ * 用户创建新菜谱或编辑已有菜谱
+ */
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -41,44 +45,41 @@ export default function CreateRecipePage() {
     }
   };
 
+  // 食材列表处理
   const handleIngredientChange = (index: number, value: string) => {
     const newIngredients = [...ingredients];
     newIngredients[index] = value;
     setIngredients(newIngredients);
   };
 
-  const addIngredient = () => {
-    setIngredients([...ingredients, ""]);
-  };
-
+  const addIngredient = () => setIngredients([...ingredients, ""]);
   const removeIngredient = (index: number) => {
     if (ingredients.length > 1) {
       setIngredients(ingredients.filter((_, i) => i !== index));
     }
   };
 
+  // 关键食材列表处理
   const handleKeyIngredientChange = (index: number, value: string) => {
     const newKeyIngredients = [...extractedIngredients];
     newKeyIngredients[index] = value;
     setExtractedIngredients(newKeyIngredients);
   };
 
-  const addKeyIngredient = () => {
-    setExtractedIngredients([...extractedIngredients, ""]);
-  };
-
+  const addKeyIngredient = () => setExtractedIngredients([...extractedIngredients, ""]);
   const removeKeyIngredient = (index: number) => {
     if (extractedIngredients.length > 1) {
       setExtractedIngredients(extractedIngredients.filter((_, i) => i !== index));
     }
   };
 
+  // 提交表单（创建或更新菜谱）
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
     if (!title.trim()) {
-      setError("Title is required");
+      setError("菜谱标题不能为空");
       return;
     }
 
@@ -92,24 +93,20 @@ export default function CreateRecipePage() {
     };
 
     try {
-      if (isEditMode && id) {
-        await axios.put(
-          `${API_BASE_URL}/user-recipes/${id}`,
-          recipeData,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      } else {
-        await axios.post(
-          `${API_BASE_URL}/user-recipes`,
-          recipeData,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-      }
+      const url = isEditMode && id 
+        ? `${API_BASE_URL}/user-recipes/${id}` 
+        : `${API_BASE_URL}/user-recipes`;
+      
+      const method = isEditMode ? axios.put : axios.post;
+      
+      await method(url, recipeData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
       navigate("/my-recipes");
     } catch (err: any) {
-      console.error("Error saving recipe:", err);
-      setError(err.response?.data?.message || "Failed to save recipe");
+      console.error("保存菜谱失败:", err);
+      setError(err.response?.data?.message || "保存失败");
     } finally {
       setLoading(false);
     }

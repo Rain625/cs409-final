@@ -1,3 +1,7 @@
+/**
+ * 用户认证管理 Context
+ * 提供用户注册、登录、登出和认证状态管理
+ */
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 
@@ -29,7 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 初始化：从 localStorage 读取 token
+  // 初始化：从本地存储恢复登录状态
   useEffect(() => {
     const storedToken = localStorage.getItem('authToken');
     const storedUser = localStorage.getItem('authUser');
@@ -37,15 +41,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (storedToken && storedUser) {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
-      
-      // 验证 token 是否有效
-      verifyToken(storedToken);
+      verifyToken(storedToken); // 验证 token 是否仍然有效
     } else {
       setLoading(false);
     }
   }, []);
 
-  // 验证 token
+  // 验证 token 有效性
   const verifyToken = async (tokenToVerify: string) => {
     try {
       const res = await axios.get(`${API_BASE_URL}/auth/me`, {
@@ -57,38 +59,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         localStorage.setItem('authUser', JSON.stringify(res.data.data));
       }
     } catch (error) {
-      console.error('Token verification failed:', error);
-      // Token 无效，清除本地存储
-      logout();
+      console.error('Token 验证失败:', error);
+      logout(); // Token 无效，清除登录状态
     } finally {
       setLoading(false);
     }
   };
 
-  // 登录
+  // 用户登录
   const login = async (email: string, password: string) => {
     try {
-      const res = await axios.post(`${API_BASE_URL}/auth/login`, {
-        email,
-        password
-      });
+      const res = await axios.post(`${API_BASE_URL}/auth/login`, { email, password });
 
       if (res.data.success) {
         const { user: userData, token: userToken } = res.data.data;
         setUser(userData);
         setToken(userToken);
-        
-        // 保存到 localStorage
         localStorage.setItem('authToken', userToken);
         localStorage.setItem('authUser', JSON.stringify(userData));
       }
     } catch (error: any) {
-      console.error('Login error:', error);
-      throw new Error(error.response?.data?.message || 'Login failed');
+      console.error('登录失败:', error);
+      throw new Error(error.response?.data?.message || '登录失败');
     }
   };
 
-  // 注册
+  // 用户注册
   const register = async (username: string, email: string, password: string) => {
     try {
       const res = await axios.post(`${API_BASE_URL}/auth/register`, {
@@ -101,18 +97,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { user: userData, token: userToken } = res.data.data;
         setUser(userData);
         setToken(userToken);
-        
-        // 保存到 localStorage
         localStorage.setItem('authToken', userToken);
         localStorage.setItem('authUser', JSON.stringify(userData));
       }
     } catch (error: any) {
-      console.error('Registration error:', error);
-      throw new Error(error.response?.data?.message || 'Registration failed');
+      console.error('注册失败:', error);
+      throw new Error(error.response?.data?.message || '注册失败');
     }
   };
 
-  // 登出
+  // 用户登出
   const logout = () => {
     setUser(null);
     setToken(null);
@@ -120,7 +114,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem('authUser');
   };
 
-  // 更新用户收藏列表（本地更新）
+  // 更新用户收藏列表（仅更新本地状态）
   const updateUserFavorites = (favorites: string[]) => {
     if (user) {
       const updatedUser = { ...user, favorites };

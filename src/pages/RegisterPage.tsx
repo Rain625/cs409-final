@@ -1,3 +1,7 @@
+/**
+ * 注册页面
+ * 新用户注册账号
+ */
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";

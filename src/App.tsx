@@ -1,3 +1,7 @@
+/**
+ * 应用主组件
+ * 包含路由配置、导航栏和全局状态管理
+ */
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Navigate, Link, useLocation, useNavigate } from "react-router-dom";
 import ListView from "./ListView";
@@ -12,6 +16,7 @@ import { RecipeDataProvider } from "./RecipeDataContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import "./index.css";
 
+// 页面头部组件
 function Header() {
   return (
     <header className="header">
@@ -24,17 +29,14 @@ function Header() {
   );
 }
 
+// 导航栏组件
 function Navbar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { isAuthenticated, user, logout } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
 
-  const listActive = pathname.startsWith("/list");
-  const galleryActive = pathname.startsWith("/gallery");
-  const favoritesActive = pathname.startsWith("/favorites");
-  const myRecipesActive = pathname.startsWith("/my-recipes");
-
+  // 退出登录处理
   const handleLogout = () => {
     logout();
     setShowUserMenu(false);
@@ -44,21 +46,21 @@ function Navbar() {
   return (
     <nav className="navbar">
       <div className="nav-left">
-        <Link to="/list" className={`nav-link ${listActive ? "active" : ""}`}>
+        <Link to="/list" className={`nav-link ${pathname.startsWith("/list") ? "active" : ""}`}>
           <span className="nav-icon">📋</span>
           <span>Recipe List</span>
         </Link>
-        <Link to="/gallery" className={`nav-link ${galleryActive ? "active" : ""}`}>
+        <Link to="/gallery" className={`nav-link ${pathname.startsWith("/gallery") ? "active" : ""}`}>
           <span className="nav-icon">🖼️</span>
           <span>Gallery View</span>
         </Link>
         {isAuthenticated && (
           <>
-            <Link to="/favorites" className={`nav-link ${favoritesActive ? "active" : ""}`}>
+            <Link to="/favorites" className={`nav-link ${pathname.startsWith("/favorites") ? "active" : ""}`}>
               <span className="nav-icon">❤️</span>
               <span>My Favorites</span>
             </Link>
-            <Link to="/my-recipes" className={`nav-link ${myRecipesActive ? "active" : ""}`}>
+            <Link to="/my-recipes" className={`nav-link ${pathname.startsWith("/my-recipes") ? "active" : ""}`}>
               <span className="nav-icon">📝</span>
               <span>My Recipes</span>
             </Link>
@@ -107,6 +109,7 @@ function Navbar() {
   );
 }
 
+// 应用根组件 - 包含全局状态管理和路由
 export default function App() {
   return (
     <AuthProvider>
@@ -115,7 +118,10 @@ export default function App() {
           <Header />
           <Navbar />
           <Routes>
+            {/* 默认重定向到列表页 */}
             <Route path="/" element={<Navigate to="/list" />} />
+            
+            {/* 菜谱浏览页面 */}
             <Route path="/list" element={<ListView />} />
             <Route path="/gallery" element={<GalleryView />} />
             <Route path="/recipe/:id" element={<DetailView />} />

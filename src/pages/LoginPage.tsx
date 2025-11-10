@@ -1,3 +1,7 @@
+/**
+ * 登录页面
+ * 用户通过邮箱和密码登录
+ */
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
