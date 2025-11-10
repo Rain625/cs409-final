@@ -111,7 +111,7 @@ export default function App() {
   return (
     <AuthProvider>
       <RecipeDataProvider>
-        <BrowserRouter basename="/mp2">
+        <BrowserRouter basename="/cs409-final">
           <Header />
           <Navbar />
           <Routes>
