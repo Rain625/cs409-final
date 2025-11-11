@@ -1,6 +1,4 @@
 /**
- * 列表视图组件
- * 显示菜谱列表，支持搜索、排序和分页
  */
 import { useRecipeData, Recipe } from "./RecipeDataContext";
 import { useEffect, useState, useMemo } from "react";
@@ -9,9 +7,8 @@ import Pagination from "./pageselector";
 import { getImageUrl, PLACEHOLDER_IMAGE } from "./config/imageConfig";
 import "./index.css";
 
-const limit = 48; // 每页显示数量
+const limit = 48;
 
-// 骨架屏加载占位组件
 function SkeletonCard() {
   return <div className="skeleton-card" />;
 }
@@ -21,7 +18,6 @@ export default function ListView() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
 
-  // 从 URL 参数初始化状态
   const [page, setPage] = useState(Number(searchParams.get("page")) || 0);
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [searchMode, setSearchMode] = useState<"title" | "ingredient">(
@@ -34,13 +30,11 @@ export default function ListView() {
     (searchParams.get("order") as "asc" | "desc") || "asc"
   );
 
-  // 初始化：获取所有菜谱数据
   useEffect(() => {
     fetchAllRecipes().finally(() => setLoading(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 同步状态到 URL 参数（便于分享和书签）
   useEffect(() => {
     const params: Record<string, string> = {};
     if (search) params.search = search;
@@ -48,23 +42,20 @@ export default function ListView() {
     if (searchMode !== "title") params.mode = searchMode;
     if (sortMode !== "id") params.sort = sortMode;
     if (sortOrder !== "asc") params.order = sortOrder;
-    setSearchParams(params, { replace: true }); // 使用 replace 避免历史记录堆积
+    setSearchParams(params, { replace: true }); 
   }, [search, page, searchMode, sortMode, sortOrder, setSearchParams]);
 
-  // 搜索过滤（使用 useMemo 缓存）
   const filtered = useMemo(() => {
     return search ? searchRecipes(search, searchMode) : allRecipes;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, searchMode, allRecipes]);
 
-  // 排序（使用 useMemo 缓存，避免每次渲染都重新排序）
   const sorted = useMemo(() => {
     return [...filtered].sort((a, b) => {
       if (sortMode === "id") {
         const result = a.id - b.id;
         return sortOrder === "asc" ? result : -result;
       } else {
-        // 按标题排序，处理空值情况，使用localeCompare进行不区分大小写的字母排序
         const titleA = (a.title || "").trim().toLowerCase();
         const titleB = (b.title || "").trim().toLowerCase();
         const result = titleA.localeCompare(titleB, undefined, { 
@@ -76,7 +67,6 @@ export default function ListView() {
     });
   }, [filtered, sortMode, sortOrder]);
 
-  // 分页（使用 useMemo 缓存）
   const paginated = useMemo(() => {
     return sorted.slice(page * limit, (page + 1) * limit);
   }, [sorted, page]);
