@@ -55,8 +55,19 @@ export default function ListView() {
 
   // 排序
   const sorted = [...filtered].sort((a, b) => {
-    const result = sortMode === "id" ? a.id - b.id : a.title.localeCompare(b.title);
-    return sortOrder === "asc" ? result : -result;
+    if (sortMode === "id") {
+      const result = a.id - b.id;
+      return sortOrder === "asc" ? result : -result;
+    } else {
+      // 按标题排序，处理空值情况，使用localeCompare进行不区分大小写的字母排序
+      const titleA = (a.title || "").trim().toLowerCase();
+      const titleB = (b.title || "").trim().toLowerCase();
+      const result = titleA.localeCompare(titleB, undefined, { 
+        sensitivity: "base",
+        numeric: true 
+      });
+      return sortOrder === "asc" ? result : -result;
+    }
   });
 
   // 分页
@@ -78,7 +89,10 @@ export default function ListView() {
             className="search-input"
           />
           <button
-            onClick={() => {
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               setSearchMode("title");
               setPage(0);
             }}
@@ -87,7 +101,10 @@ export default function ListView() {
             📝 Title
           </button>
           <button
-            onClick={() => {
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               setSearchMode("ingredient");
               setPage(0);
             }}
@@ -100,7 +117,10 @@ export default function ListView() {
         <div className="sort-bar">
           <span className="sort-label">Sort by:</span>
           <button
-            onClick={() => {
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               setSortMode("id");
               setPage(0);
             }}
@@ -109,7 +129,10 @@ export default function ListView() {
             ID
           </button>
           <button
-            onClick={() => {
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               setSortMode("title");
               setPage(0);
             }}
@@ -120,7 +143,10 @@ export default function ListView() {
 
           <span className="order-label">Order:</span>
           <button
-            onClick={() => {
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               setSortOrder("asc");
               setPage(0);
             }}
@@ -129,7 +155,10 @@ export default function ListView() {
             ↑ Asc
           </button>
           <button
-            onClick={() => {
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               setSortOrder("desc");
               setPage(0);
             }}
